@@ -72,11 +72,14 @@ impl Settings {
 async fn daytime_mode_loop(settings: &mut Settings) -> Result<(), anyhow::Error> {
     let mut timer = 0;
     loop {
-        println!("looping");
-        timer += 1;
         if timer == settings.interval {
-            timer = 0;
-            settings.set_wallpaper().ok();
+            match settings.cycle_mode {
+                Mode::On => {
+                    timer = 0;
+                    settings.set_wallpaper().ok();
+                }
+                Mode::Off => timer = 0,
+            }
         }
         let response =
             fetch_weather::openweathermap(&settings.key, &settings.city, &settings.country).await?;
@@ -90,6 +93,7 @@ async fn daytime_mode_loop(settings: &mut Settings) -> Result<(), anyhow::Error>
             settings.daytime = daytime;
             settings.set_wallpaper().ok();
         } else {
+            timer += 1;
             thread::sleep(time::Duration::from_secs(60));
             continue;
         }
@@ -98,13 +102,15 @@ async fn daytime_mode_loop(settings: &mut Settings) -> Result<(), anyhow::Error>
 
 async fn weather_mode_loop(settings: &mut Settings) -> Result<(), anyhow::Error> {
     let mut timer = 0;
-    let delay = time::Duration::from_secs(60);
     loop {
-        timer += 1;
-        println!("timer: {}", timer);
         if timer == settings.interval {
-            timer = 0;
-            settings.set_wallpaper().ok();
+            match settings.cycle_mode {
+                Mode::On => {
+                    timer = 0;
+                    settings.set_wallpaper().ok();
+                }
+                Mode::Off => timer = 0,
+            }
         }
         let response =
             fetch_weather::openweathermap(&settings.key, &settings.city, &settings.country).await?;
@@ -122,7 +128,8 @@ async fn weather_mode_loop(settings: &mut Settings) -> Result<(), anyhow::Error>
             settings.weather = weather;
             settings.set_wallpaper().ok();
         } else {
-            thread::sleep(delay);
+            timer += 1;
+            thread::sleep(time::Duration::from_secs(60));
             continue;
         }
     }
