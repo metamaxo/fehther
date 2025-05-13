@@ -20,8 +20,8 @@ pub struct WeatherResponse {
 
 #[derive(Deserialize, Debug)]
 pub struct Coord {
-    pub lon: f64,
-    pub lat: f64,
+    pub lon: Option<f64>,
+    pub lat: Option<f64>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -34,15 +34,15 @@ pub struct Weather {
 
 #[derive(Deserialize, Debug)]
 pub struct Main {
-    pub temp: f64,
+    pub temp: Option<f64>,
     #[serde(rename = "feels_like")]
-    pub feels_like: f64,
+    pub feels_like: Option<f64>,
     #[serde(rename = "temp_min")]
-    pub temp_min: f64,
+    pub temp_min: Option<f64>,
     #[serde(rename = "temp_max")]
-    pub temp_max: f64,
-    pub pressure: i32,
-    pub humidity: i32,
+    pub temp_max: Option<f64>,
+    pub pressure: Option<i32>,
+    pub humidity: Option<i32>,
     #[serde(rename = "sea_level")]
     pub sea_level: Option<i32>,
     #[serde(rename = "grnd_level")]
@@ -51,22 +51,22 @@ pub struct Main {
 
 #[derive(Deserialize, Debug)]
 pub struct Wind {
-    pub speed: f64,
-    pub deg: i32,
+    pub speed: Option<f64>,
+    pub deg: Option<i32>,
     pub gust: Option<f64>,
 }
 
 #[derive(Deserialize, Debug)]
 pub struct Clouds {
-    pub all: i32,
+    pub all: Option<i32>,
 }
 
 #[derive(Deserialize, Debug)]
 pub struct Sys {
     #[serde(rename = "type")]
-    pub type_field: i32,
+    pub type_field: Option<i32>,
     pub id: i32,
-    pub country: String,
+    pub country: Option<String>,
     pub sunrise: i32,
     pub sunset: i32,
 }

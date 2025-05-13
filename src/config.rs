@@ -5,7 +5,7 @@ use crate::Settings;
 use crate::WeatherType;
 use anyhow::anyhow;
 use anyhow::{Context, Result};
-use ini::{Ini, Properties}; // Import Ini and Properties
+use ini::Ini;
 use std::collections::HashMap;
 
 fn get_mode(mode: &str) -> Mode {
@@ -30,13 +30,6 @@ fn fetch_config_path() -> Result<PathBuf, anyhow::Error> {
         .join("wallpaper-manager")
         .join("config.ini");
     Ok(config_path)
-}
-
-fn get_folder(config: Option<String>, default: &str) -> String {
-    match config {
-        Some(map) => map.to_string(),
-        None => default.to_string(),
-    }
 }
 
 // Read config file and load configuration

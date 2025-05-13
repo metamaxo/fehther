@@ -1,4 +1,3 @@
-#![allow(dead_code)]
 use crate::fetch_weather::WeatherResponse;
 use std::fmt;
 mod config;
@@ -139,14 +138,19 @@ impl Settings {
     // Check if current weather type is in a custom weather group. Also checks if weather mode is
     // turned off for current daytime.
     fn check_group(&self) -> String {
-        if let Some((group, _)) = self
-            .weather_groups
-            .iter()
-            .find(|(_, weather_list)| weather_list.contains(&self.weather))
-        {
-            group.to_string()
-        } else {
-            self.weather.to_string()
+        match self.weather_groups_mode {
+            Mode::On => {
+                if let Some((group, _)) = self
+                    .weather_groups
+                    .iter()
+                    .find(|(_, weather_list)| weather_list.contains(&self.weather))
+                {
+                    group.to_string()
+                } else {
+                    self.weather.to_string()
+                }
+            }
+            Mode::Off => self.weather.to_string(),
         }
     }
 
