@@ -44,16 +44,16 @@ pub struct Main {
     pub pressure: i32,
     pub humidity: i32,
     #[serde(rename = "sea_level")]
-    pub sea_level: Option<i32>, // Added Option in case it's sometimes null
+    pub sea_level: Option<i32>,
     #[serde(rename = "grnd_level")]
-    pub grnd_level: Option<i32>, // Added Option in case it's sometimes null
+    pub grnd_level: Option<i32>,
 }
 
 #[derive(Deserialize, Debug)]
 pub struct Wind {
     pub speed: f64,
     pub deg: i32,
-    pub gust: Option<f64>, // Added Option in case it's sometimes null
+    pub gust: Option<f64>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -64,12 +64,13 @@ pub struct Clouds {
 #[derive(Deserialize, Debug)]
 pub struct Sys {
     #[serde(rename = "type")]
-    pub type_field: i32, // Renamed 'type' to 'type_field' to avoid Rust keyword
+    pub type_field: i32,
     pub id: i32,
     pub country: String,
-    pub sunrise: i64,
-    pub sunset: i64,
+    pub sunrise: i32,
+    pub sunset: i32,
 }
+
 // Get API response from openweathermap
 pub async fn openweathermap(
     key: &str,
@@ -84,16 +85,4 @@ pub async fn openweathermap(
     .text()
     .await?;
     Ok(serde_json::from_str(&body)?)
-}
-// Get weather condition from weather id
-pub fn condition(id: i32) -> String {
-    match id {
-        199..233 => String::from("thunder"),
-        299..321 => String::from("drizzle"),
-        499..532 => String::from("rain"),
-        599..623 => String::from("snow"),
-        700..781 => String::from("mist"),
-        800 => String::from("clear"),
-        _ => String::from("clouds"),
-    }
 }
