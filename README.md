@@ -20,46 +20,49 @@ ______________________________________________________________________
 
 Getting Started:
 
-1.  Make sure Feh is installed. Feh is available for most linux distro's through their respective application managers. For more info on how to install feh, visit: : https://github.com/derf/feh
+1.  Make sure Feh is installed. Feh is available for most linux distro's through their respective application managers. For more info on how to install feh, visit: [https://github.com/derf/feh]
 
 2.  Make sure rustup is installed: 
-
-    curl https://sh.rustup.rs -sSf | sh
-
-
-3.  Create a free open weather account on https://openweathermap.org to create your Open Weather API key. 
+    ```
+    rustup -V
+    ```
+    Install rustup if not installed: 
+    ```
+    'curl https://sh.rustup.rs -sSf | sh'
+    ```
+3.  Create a free open weather account on [https://openweathermap.org] to create your Open Weather API key. 
 
 4.  Download the Fehther repository and cd into the folder: 
-
-    git clone https://github.com/metamaxo/fehther && cd fether
-
+```
+    ~ $ git clone https://github.com/metamaxo/fehther && cd fether
+```
 5.  Copy the config.ini file into your .config folder: 
-
+```
     cp -r fehther_config ~/.config/
-
+```
 6.  Build fehther: 
-
+```
     cargo build --release 
-
+```
 7.  move fehther into .bin and make executable 
-
-    chmod +x ./target/release/fehther && mv ./target/release/fether /home/<user>/.bin/fehther/
-
+```
+    $ chmod +x ./target/release/fehther && mv ./target/release/fether /home/<user>/.bin/fehther/
+```
 8.  execute fehther from wherever is convenient. For example:
 
-for running fehther from your i3 config add the following line to ~/.config/i3/ :
-
+  for running fehther from your i3 config add the following line to ~/.config/i3/ :
+```
     exec --no-startup-id nohup /.bin/fehther/fehther
-
-for running fehther from bash or zsh add the folling line to the corresponding .zshrc or .bashrc: 
-
+```
+  for running fehther from bash or zsh add the folling line to the corresponding .zshrc or .bashrc: 
+```
     nohup /.bin/fehther/fehther &
-
+```
 9. (optional) remove unnecessary files: 
-
+```
     sudo rm -rf ~/fehther
-
-10. fehther is now running, for configuration consult the .config/fehter/config.ini file
+```
+10. fehther is now running, for configuration edit the .config/fehter/config.ini file
 
 ______________________________________________________________________
 
