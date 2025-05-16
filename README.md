@@ -6,19 +6,19 @@ ______________________________________________________________________
 
 ## Modes: 
 
-# Cycle Mode: 
+### Cycle Mode: 
 Cycles through the wallpapers available in the configured folder. Cycle mode can be used as a standalone mode or in combination with other modes.
 
-# Daytime Mode: 
+### Daytime Mode: 
 Changes the wallpaper based on sunrise and sunset. After sunrise the wallpaper will be sourced from the configured daytime folder, after sunset the wallpaper will be sourced from the configured nighttime folder. 
 
-# Golden Hour Mode: 
+### Golden Hour Mode: 
 Changes the wallpaper for a set time after sunrise and before sunset. Sunrise and sunset folders can be configured in the config file. Golden hour timer defaults to 60 minutes after sunrise and 60 minutes before sunset, but can be set to any value. 
 
-# Weather Mode: 
+### Weather Mode: 
 Changes wallpaper based on weather. Weather can be grouped together in custom weather groups. The available weather types are: Clear, Scattered Clouds, Few Clouds, Broken Clouds, Overcast Clouds, Drizzle, Rain, Mist, Snow and thunder. Weather mode can be disabled for specific daytimes. For example, weather mode can be active for night and day, but turned off for sunrise and sunset. 
 
-# Feh Modes: 
+### Feh Modes: 
 All available Feh background modes are supported, the modes are: center, fill, max, scale or tile. 
 
 ______________________________________________________________________
@@ -71,7 +71,7 @@ ______________________________________________________________________
 
 ______________________________________________________________________
 
-## Configuration: 
+Configuration: 
 
     
 
