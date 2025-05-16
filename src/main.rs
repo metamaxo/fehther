@@ -1,4 +1,5 @@
 use crate::fetch_weather::WeatherResponse;
+use anyhow::anyhow;
 use std::fmt;
 mod config;
 use anyhow::Result;
@@ -11,10 +12,13 @@ extern crate ini;
 
 const IMAGE_EXTENSIONS: &[&str] = &["jpg", "jpeg", "png", "gif", "bmp", "webp", "tiff", "tif"];
 
-#[derive(Debug, PartialEq, PartialOrd)]
+#[derive(Debug, PartialEq, PartialOrd, Clone)]
 pub enum WeatherType {
     Clear,
-    Clouds,
+    FewClouds,
+    ScatteredClouds,
+    BrokenClouds,
+    OvercastClouds,
     Drizzle,
     Mist,
     Rain,
@@ -26,7 +30,10 @@ impl fmt::Display for WeatherType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
             WeatherType::Clear => write!(f, "clear"),
-            WeatherType::Clouds => write!(f, "clouds"),
+            WeatherType::ScatteredClouds => write!(f, "scattered clouds"),
+            WeatherType::BrokenClouds => write!(f, "broken clouds"),
+            WeatherType::FewClouds => write!(f, "few clouds"),
+            WeatherType::OvercastClouds => write!(f, "overcast clouds"),
             WeatherType::Drizzle => write!(f, "drizzle"),
             WeatherType::Mist => write!(f, "mist"),
             WeatherType::Rain => write!(f, "rain"),
@@ -43,24 +50,49 @@ pub fn condition(id: i32) -> WeatherType {
         499..532 => WeatherType::Rain,
         599..623 => WeatherType::Snow,
         700..781 => WeatherType::Mist,
-        800 => WeatherType::Clear,
-        _ => WeatherType::Clouds,
+        801 => WeatherType::FewClouds,
+        802 => WeatherType::ScatteredClouds,
+        803 => WeatherType::BrokenClouds,
+        804 => WeatherType::OvercastClouds,
+        _ => WeatherType::Clear,
     }
 }
 
 #[derive(Debug, PartialEq, PartialOrd)]
 pub enum Mode {
-    On,
-    Off,
+    CycleMode,
+    DaytimeMode,
+    WeatherMode,
+    SunriseMode,
+}
+impl Mode {
+    fn from_string(mode: &str) -> Result<Mode, anyhow::Error> {
+        match mode {
+            "cycle-mode" => Ok(Mode::CycleMode),
+            "daytime-mode" => Ok(Mode::DaytimeMode),
+            "weather-mode" => Ok(Mode::WeatherMode),
+            "SunriseMode" => Ok(Mode::SunriseMode),
+            _ => Err(anyhow!("unknown mode")),
+        }
+    }
+    fn to_string_vec() -> Vec<String> {
+        vec![
+            "cycle-mode".to_string(),
+            "daytime-mode".to_string(),
+            "weather-mode".to_string(),
+            "sunrise-mode".to_string(),
+        ]
+    }
 }
 
-#[derive(Debug, PartialEq, PartialOrd)]
+#[derive(Eq, Hash, Debug, PartialEq, PartialOrd)]
 pub enum Daytime {
     Day,
     Night,
     Sunrise,
     Sunset,
 }
+
 impl fmt::Display for Daytime {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
@@ -74,29 +106,19 @@ impl fmt::Display for Daytime {
 
 #[derive(Debug)]
 pub struct Settings {
-    current_loop: Mode,
+    current_loop: bool,
     key: String,
     city: String,
     country: String,
     path: String,
-    daytime_mode: Mode,
-    custom_folder_names: Mode,
-    daytime_folder_name: String,
-    nighttime_folder_name: String,
-    sunrise_folder_name: String,
-    sunset_folder_name: String,
-    weather_mode: Mode,
-    weather_groups_mode: Mode,
+    modes: Vec<Mode>,
+    daytime: Daytime,
+    disabled_daytimes: Option<Vec<Daytime>>,
+    folder_names: HashMap<Daytime, String>,
+    custom_weather_groups: bool,
     weather_groups: HashMap<String, Vec<WeatherType>>,
-    daytime_weather_mode: Mode,
-    nighttime_weather_mode: Mode,
-    sunrise_weather_mode: Mode,
-    sunset_weather_mode: Mode,
-    cycle_mode: Mode,
-    sunset_mode: Mode,
     sunset_time: i32,
     interval: i32,
-    daytime: Daytime,
     weather: WeatherType,
     feh_mode: String,
     timer: i32,
@@ -104,75 +126,46 @@ pub struct Settings {
 
 impl Settings {
     // Fetch path to wallpaper directory.
+
     fn fetch_path(&self) -> String {
-        match self.weather_mode {
-            Mode::On => match self.daytime_mode {
-                Mode::On => match self.check_conditionals() {
-                    Mode::On => format!(
-                        "{}{}/{}",
-                        self.path,
-                        self.fetch_folder_name(),
-                        self.check_group()
-                    ),
-                    Mode::Off => format!("{}{}", self.path, self.fetch_folder_name()),
+        match self.modes.contains(&Mode::WeatherMode) {
+            true => match self.modes.contains(&Mode::DaytimeMode) {
+                true => match &self.disabled_daytimes {
+                    Some(daytimes) => match daytimes.contains(&self.daytime) {
+                        true => format!("{}{}", self.path, self.fetch_folder_name(),),
+                        false => format!(
+                            "{}{}/{}",
+                            self.path,
+                            self.fetch_folder_name(),
+                            self.check_group()
+                        ),
+                    },
+                    None => format!("{}{}", self.path, self.fetch_folder_name()),
                 },
-                Mode::Off => format!("{}{}", self.path, self.check_group()),
+                false => format!("{}{}", self.path, self.check_group()),
             },
-            Mode::Off => match self.daytime_mode {
-                Mode::On => format!("{}{}", self.path, self.fetch_folder_name()),
-                Mode::Off => self.path.clone(),
+            false => match self.modes.contains(&Mode::DaytimeMode) {
+                true => format!("{}{}", self.path, self.fetch_folder_name()),
+                false => self.path.clone(),
             },
         }
     }
 
     // Fetch correct folder name.
-    fn fetch_folder_name(&self) -> &str {
-        match self.daytime {
-            Daytime::Day => &self.daytime_folder_name,
-            Daytime::Night => &self.nighttime_folder_name,
-            Daytime::Sunrise => &self.sunrise_folder_name,
-            Daytime::Sunset => &self.sunset_folder_name,
-        }
+    fn fetch_folder_name(&self) -> String {
+        self.folder_names.get(&self.daytime).unwrap().to_string()
     }
 
     // Check if current weather type is in a custom weather group. Also checks if weather mode is
     // turned off for current daytime.
     fn check_group(&self) -> String {
-        match self.weather_groups_mode {
-            Mode::On => {
-                if let Some((group, _)) = self
-                    .weather_groups
-                    .iter()
-                    .find(|(_, weather_list)| weather_list.contains(&self.weather))
-                {
-                    group.to_string()
-                } else {
-                    self.weather.to_string()
-                }
-            }
-            Mode::Off => self.weather.to_string(),
-        }
-    }
-
-    // Check if weather mode is turned off for current daytime.
-    fn check_conditionals(&self) -> Mode {
-        match self.daytime {
-            Daytime::Day => match self.daytime_weather_mode {
-                Mode::Off => Mode::Off,
-                Mode::On => Mode::On,
-            },
-            Daytime::Night => match self.nighttime_weather_mode {
-                Mode::Off => Mode::Off,
-                Mode::On => Mode::On,
-            },
-            Daytime::Sunrise => match self.sunrise_weather_mode {
-                Mode::On => Mode::On,
-                Mode::Off => Mode::Off,
-            },
-            Daytime::Sunset => match self.sunset_weather_mode {
-                Mode::On => Mode::On,
-                Mode::Off => Mode::Off,
-            },
+        if self.custom_weather_groups {
+            self.weather_groups
+                .iter()
+                .find(|(_, weather_list)| weather_list.contains(&self.weather))
+                .map_or_else(|| self.weather.to_string(), |(group, _)| group.to_string())
+        } else {
+            self.weather.to_string()
         }
     }
 
@@ -181,9 +174,9 @@ impl Settings {
         if self.timer == self.interval {
             self.timer = 0;
             println!("timer detected");
-            self.current_loop = Mode::On
+            self.current_loop = true;
         } else {
-            self.timer += 1
+            self.timer += 1;
         }
     }
 
@@ -194,7 +187,7 @@ impl Settings {
         if self.weather != weather {
             println!("weather detected");
             self.weather = weather;
-            self.current_loop = Mode::On
+            self.current_loop = true;
         }
     }
 
@@ -203,41 +196,35 @@ impl Settings {
         let daytime = utils::fetch_daytime(
             response.sys.sunrise,
             response.sys.sunset,
-            &self.sunset_mode,
+            &self.modes,
             self.sunset_time,
         );
         if self.daytime != daytime {
             self.daytime = daytime;
             println!("daytime detected");
-            self.current_loop = Mode::On
+            self.current_loop = true;
         }
     }
 
     // Set wallpaper
     fn set_wallpaper(&self) -> Result<(), anyhow::Error> {
         println!("setting wallpaper");
-        // Set directory path
         let directory_path = PathBuf::from(self.fetch_path());
         println!("path is: {:?}", directory_path);
 
-        // Attempt to read the directory
         match fs::read_dir(&directory_path) {
             Ok(entries) => {
                 let image_files: Vec<String> = entries
-                    // If reading entry was succcesful, we fetch the path
-                    .filter_map(|results| results.map(|entry| entry.path()).ok())
-                    // Check if path is file and not a directory
+                    .filter_map(|entry| entry.ok().map(|e| e.path()))
                     .filter(|path| path.is_file())
-                    // Check if file extension is compatible.
                     .filter_map(|path| {
                         path.extension()
                             .and_then(|ext| ext.to_str())
                             .filter(|ext| IMAGE_EXTENSIONS.contains(ext))
-                            .and_then(|_| path.display().to_string().into())
+                            .map(|_| path.display().to_string())
                     })
                     .collect();
 
-                // If image_files isn't empty, run feh command to change wallpaper
                 if !image_files.is_empty() {
                     let mut command = Command::new("feh");
                     command.args([&self.feh_mode, "--randomize"]);
@@ -245,15 +232,12 @@ impl Settings {
                     command.output().ok();
                 } else {
                     println!("no images found in directory")
-                    // If no images are found in directory, wallpaper remains unchanged.
                 }
             }
-            // If no directory is found for the selected mode, wallpaper remains unchanged.
-            Err(_) => {
-                println!("No directory found for: {:?}", directory_path);
+            Err(e) => {
+                println!("No directory found for: {:?} {:?}", directory_path, e);
             }
         }
-
         Ok(())
     }
 }
@@ -262,28 +246,30 @@ async fn wallpaper_manager_loop(settings: &mut Settings) -> Result<(), anyhow::E
     loop {
         println!("looping");
         // If cycle mode is on, change wallpaper if interval is reached.
-        if settings.cycle_mode == Mode::On {
+        if settings.modes.contains(&Mode::CycleMode) {
             settings.check_cycle_mode()
         }
         // Only fetch weather data when weather or day mode is on.
-        if settings.daytime_mode == Mode::On || settings.weather_mode == Mode::On {
+        if settings.modes.contains(&Mode::DaytimeMode)
+            || settings.modes.contains(&Mode::WeatherMode)
+        {
             // fetch weather data
             let response =
                 fetch_weather::openweathermap(&settings.key, &settings.city, &settings.country)
                     .await?;
             // If daytime mode is on, change wallpaper on sunrise and sunset.
-            if settings.daytime_mode == Mode::On {
+            if settings.modes.contains(&Mode::DaytimeMode) {
                 settings.check_daytime_mode(&response);
             }
             // If weather mode is on, change wallpaper when weather changes.
-            if settings.weather_mode == Mode::On {
+            if settings.modes.contains(&Mode::WeatherMode) {
                 settings.check_weather_mode(&response);
             }
         }
         // If a change has been detected in any of the modes, change wallpaper.
-        if settings.current_loop == Mode::On {
+        if settings.current_loop {
             settings.set_wallpaper().ok();
-            settings.current_loop = Mode::Off
+            settings.current_loop = false
         }
         thread::sleep(time::Duration::from_secs(60))
     }
@@ -294,6 +280,7 @@ async fn main() -> Result<(), anyhow::Error> {
     // Load configuration
     let mut settings: Settings = config::fetch_config()?;
     // Start loop
+    println!("configuration: {:?} ", settings);
     wallpaper_manager_loop(&mut settings).await
 }
 
