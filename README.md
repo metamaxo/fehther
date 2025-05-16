@@ -1,24 +1,29 @@
-Fehther
+# Fehther
 
 A highly configurable wallpaper manager script built around Feh using the open weather API to change your wallpaper based on changes in weather, sunrise and sunset. When the weather changes, so does your wallpaper.
 
 ______________________________________________________________________
 
-Modes: 
+## Modes: 
 
-Cycle Mode: Cycles through the wallpapers available in the configured folder. Cycle mode can be used as a standalone mode or in combination with other modes. 
+# Cycle Mode: 
+Cycles through the wallpapers available in the configured folder. Cycle mode can be used as a standalone mode or in combination with other modes.
 
-Daytime Mode: Changes the wallpaper based on sunrise and sunset. After sunrise the wallpaper will be sourced from the configured daytime folder, after sunset the wallpaper will be sourced from the configured nighttime folder. 
+# Daytime Mode: 
+Changes the wallpaper based on sunrise and sunset. After sunrise the wallpaper will be sourced from the configured daytime folder, after sunset the wallpaper will be sourced from the configured nighttime folder. 
 
-Golden Hour Mode: Changes the wallpaper for a set time after sunrise and before sunset. Sunrise and sunset folders can be configured in the config file. Golden hour timer defaults to 60 minutes after sunrise and 60 minutes before sunset, but can be set to any value. 
+# Golden Hour Mode: 
+Changes the wallpaper for a set time after sunrise and before sunset. Sunrise and sunset folders can be configured in the config file. Golden hour timer defaults to 60 minutes after sunrise and 60 minutes before sunset, but can be set to any value. 
 
-Weather Mode: Changes wallpaper based on weather. Weather can be grouped together in custom weather groups. The available weather types are: Clear, Scattered Clouds, Few Clouds, Broken Clouds, Overcast Clouds, Drizzle, Rain, Mist, Snow and thunder. Weather mode can be disabled for specific daytimes. For example, weather mode can be active for night and day, but turned off for sunrise and sunset. 
+# Weather Mode: 
+Changes wallpaper based on weather. Weather can be grouped together in custom weather groups. The available weather types are: Clear, Scattered Clouds, Few Clouds, Broken Clouds, Overcast Clouds, Drizzle, Rain, Mist, Snow and thunder. Weather mode can be disabled for specific daytimes. For example, weather mode can be active for night and day, but turned off for sunrise and sunset. 
 
-Feh Modes: All available Feh background modes are supported, the modes are: center, fill, max, scale or tile. 
+# Feh Modes: 
+All available Feh background modes are supported, the modes are: center, fill, max, scale or tile. 
 
 ______________________________________________________________________
 
-Getting Started:
+## Getting Started:
 
 1.  Make sure Feh is installed. Feh is available for most linux distro's through their respective application managers. For more info on how to install feh, visit: [https://github.com/derf/feh]
 
@@ -34,7 +39,7 @@ Getting Started:
 
 4.  Download the Fehther repository and cd into the folder: 
 ```
-    ~ $ git clone https://github.com/metamaxo/fehther && cd fether
+    git clone https://github.com/metamaxo/fehther && cd fether
 ```
 5.  Copy the config.ini file into your .config folder: 
 ```
@@ -46,7 +51,7 @@ Getting Started:
 ```
 7.  move fehther into .bin and make executable 
 ```
-    $ chmod +x ./target/release/fehther && mv ./target/release/fether /home/<user>/.bin/fehther/
+    chmod +x ./target/release/fehther && mv ./target/release/fether /home/<user>/.bin/fehther/
 ```
 8.  execute fehther from wherever is convenient. For example:
 
@@ -66,7 +71,7 @@ Getting Started:
 
 ______________________________________________________________________
 
-Configuration: 
+## Configuration: 
 
     
 
