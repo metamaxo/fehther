@@ -53,25 +53,11 @@ Fehther supports several modes, which can be used individually or in combination
     * Make sure Feh is installed. Feh is available for most Linux distributions through their respective package managers.
     * For more information on how to install Feh, visit: <https://github.com/derf/feh>
 
-2.  **Install Rustup:**
-
-    * Make sure rustup is installed:
-
-        ```
-        rustup -V
-        ```
-
-    * Install rustup if not installed:
-
-        ```
-        curl https://sh.rustup.rs -sSf | sh
-        ```
-
-3.  **Create an OpenWeatherMap Account:**
+2.  **Create an OpenWeatherMap Account:**
 
     * Create a free OpenWeatherMap account on <https://openweathermap.org> to obtain your OpenWeatherMap API key.
 
-4.  **Download Fehther:**
+3.  **Download Fehther:**
 
     * Download the Fehther repository and navigate to the folder:
 
@@ -79,7 +65,7 @@ Fehther supports several modes, which can be used individually or in combination
         git clone https://github.com/metamaxo/fehther && cd fehther
         ```
 
-5.  **Copy the Configuration File:**
+4.  **Copy the Configuration File:**
 
     * Copy the `config.ini` file into your configuration folder:
 
@@ -87,7 +73,7 @@ Fehther supports several modes, which can be used individually or in combination
         sudo cp -r ./config.ini ~/.config/fehther/
         ```
 
-6.  **Install the Executable:**
+5.  **Install the Executable:**
 
     * Move the fehther executable to a standard location and make it executable:
 
@@ -105,7 +91,7 @@ Fehther supports several modes, which can be used individually or in combination
 
         *(Alternative: User-specific installation)*
 
-7.  **Run Fehther:**
+6.  **Run Fehther:**
 
     * Execute Fehther from a convenient location. Ensure that the directory containing the `fehther` executable (e.g., `/usr/bin` or `$HOME/.local/bin`) is in your system's `PATH`.
 
@@ -123,7 +109,7 @@ Fehther supports several modes, which can be used individually or in combination
 
         * Add a note about the importance of sourcing the shell configuration file. This is crucial for the \`PATH\` changes to take effect.
 
-8.  **(Optional) Remove Unnecessary Files:**
+7.  **(Optional) Remove Unnecessary Files:**
 
     * Remove the cloned repository:
 
@@ -131,9 +117,9 @@ Fehther supports several modes, which can be used individually or in combination
         sudo rm -rf ~/fehther
         ```
 
-9.  **Configuration:**
+8.  **Configuration:**
 
-    * Fehther is now running. Edit the configuration file at \`~/.config/fehther/config.ini\` to customize its behavior.
+    * Fehther is now running. Edit the configuration file at `~/.config/fehther/config.ini` to customize its behavior.
 
 ## Configuration
 
