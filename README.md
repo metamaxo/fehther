@@ -199,8 +199,10 @@ All modes can be combined. For example, you can use both weather mode and cycle 
 
     **Cloud types**
 
-    The available cloud types from least cloud coverage to most cloud coverage are: few-clouds, scattered-clouds, broken-clouds and overcast-clouds.
-
+    The available cloud types from least cloud coverage to most cloud coverage are: 
+    ```
+    few-clouds, scattered-clouds, broken-clouds and overcast-clouds.
+    ```
 
     **Folder Structure Example:**
 
