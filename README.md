@@ -107,7 +107,6 @@ Fehther supports several modes, which can be used individually or in combination
         nohup fehther &
         ```
 
-        * Add a note about the importance of sourcing the shell configuration file. This is crucial for the \`PATH\` changes to take effect.
 
 7.  **(Optional) Remove Unnecessary Files:**
 
