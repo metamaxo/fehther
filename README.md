@@ -20,7 +20,7 @@ A highly configurable wallpaper manager script built around Feh, using the OpenW
 
 ## Modes
 
-Fehther supports several modes, which can be used individually or in combination:
+fehther supports several modes, which can be used individually or in combination:
 
 ###   Cycle Mode:
 
@@ -57,9 +57,9 @@ Fehther supports several modes, which can be used individually or in combination
 
     * Create a free OpenWeatherMap account on <https://openweathermap.org> to obtain your OpenWeatherMap API key.
 
-3.  **Download Fehther:**
+3.  **Download fehther:**
 
-    * Download the Fehther repository and navigate to the folder:
+    * Download the fehther repository and navigate to the folder:
 
         ```
         git clone https://github.com/metamaxo/fehther && cd fehther
@@ -91,17 +91,17 @@ Fehther supports several modes, which can be used individually or in combination
 
         *(Alternative: User-specific installation)*
 
-6.  **Run Fehther:**
+6.  **Run fehther:**
 
-    * Execute Fehther from a convenient location. Ensure that the directory containing the `fehther` executable (e.g., `/usr/bin` or `$HOME/.local/bin`) is in your system's `PATH`.
+    * Execute fehther from a convenient location. Ensure that the directory containing the `fehther` executable (e.g., `/usr/bin` or `$HOME/.local/bin`) is in your system's `PATH`.
 
-    * For running Fehther from your i3 configuration, add the following line to `~/.config/i3/config`:
+    * For running fehther from your i3 configuration, add the following line to `~/.config/i3/config`:
 
         ```
         exec --no-startup-id fehther
         ```
 
-    * For running Fehther from Bash or Zsh, add the following line to the corresponding `.zshrc` or `.bashrc`:
+    * For running fehther from Bash or Zsh, add the following line to the corresponding `.zshrc` or `.bashrc`:
 
         ```
         nohup fehther &
@@ -118,11 +118,11 @@ Fehther supports several modes, which can be used individually or in combination
 
 8.  **Configuration:**
 
-    * Fehther is now running. Edit the configuration file at `~/.config/fehther/config.ini` to customize its behavior.
+    * fehther is now running. Edit the configuration file at `~/.config/fehther/config.ini` to customize its behavior.
 
 ## Configuration
 
-Fehther offers many configuration options, most of which are optional. Here's a detailed explanation of each option. Ensure your folder layout matches the configured modes. The basic folder structure starts from your main wallpaper folder:
+fehther offers many configuration options, most of which are optional. Here's a detailed explanation of each option. Ensure your folder layout matches the configured modes. The basic folder structure starts from your main wallpaper folder:
 
 For example, a complete folder structure for day and night might look like this:
 
@@ -155,11 +155,11 @@ For example, a complete folder structure for day and night might look like this:
 
 * `country`:  **(Required)** Use the two-letter country code for your location (e.g., "US", "CA", "GB").
 
-* `path`:  **(Required)** Replace this with the absolute path to your main wallpaper folder. This is the root directory where Fehther will look for subfolders.
+* `path`:  **(Required)** Replace this with the absolute path to your main wallpaper folder. This is the root directory where fehther will look for subfolders.
 
 ###   Modes
 
-All modes can be combined. For example, you can use both weather mode and cycle mode simultaneously. Fehther will then cycle through wallpapers within the appropriate weather folder.
+All modes can be combined. For example, you can use both weather mode and cycle mode simultaneously. fehther will then cycle through wallpapers within the appropriate weather folder.
 
 * `feh-mode`: Sets the Feh display mode. Available modes are:
 
@@ -179,7 +179,7 @@ All modes can be combined. For example, you can use both weather mode and cycle 
 
 * `disabled-daytime-modes`: A comma-separated list of daytimes for which weather mode should be disabled. For example, if you only want weather-based wallpapers during the day, set this to `sunrise sunset night`. Valid options are: `sunrise`, `day`, `sunset`, and `night`.
 
-* `cycle-mode`: If set to `true`, Fehther will cycle through the wallpapers in the current folder.
+* `cycle-mode`: If set to `true`, fehther will cycle through the wallpapers in the current folder.
 
 * `cycle-timer`: Sets the interval (in minutes) for cycling through wallpapers in cycle mode. For example, setting this to `5` will change the wallpaper every 5 minutes.
 
@@ -187,7 +187,7 @@ All modes can be combined. For example, you can use both weather mode and cycle 
 
 * `weather-groups`: Set to `true` to enable custom grouping of weather conditions.
 
-    Fehther allows you to group weather types for more flexible wallpaper selection. You can define custom groups, and each weather type can belong to only one group. Groups are defined in the format `group-name = weather types`. For example:
+    fehther allows you to group weather types for more flexible wallpaper selection. You can define custom groups, and each weather type can belong to only one group. Groups are defined in the format `group-name = weather types`. For example:
 
     ```
     rainy = drizzle rain
@@ -195,7 +195,12 @@ All modes can be combined. For example, you can use both weather mode and cycle 
     clear = clear
     ```
 
-    In this example, if the weather is "drizzle" or "rain", Fehther will use wallpapers from the \`rainy\` folder.
+    In this example, if the weather is "drizzle" or "rain", fehther will use wallpapers from the `rainy` folder.
+
+    **Cloud types**
+
+    The available cloud types from least cloud coverage to most cloud coverage are: few-clouds, scattered-clouds, broken-clouds and overcast-clouds.
+
 
     **Folder Structure Example:**
 
@@ -245,15 +250,15 @@ If you're having trouble finding high-resolution wallpapers to match your needs,
 
 * **Feh Not Found:** If you get an error that `feh` cannot be found, double-check that it is correctly installed and that it's in your system's `PATH`. You can verify this by running `which feh` in your terminal. If it doesn't output a path, you'll need to install `feh` or add its installation directory to your `PATH`.
 
-* **Config file not found**: If Fehther complains about the config file not being found, make sure that the file is located at `~/.config/fehther/config.ini`.
+* **Config file not found**: If fehther complains about the config file not being found, make sure that the file is located at `~/.config/fehther/config.ini`.
 
 * **Wallpaper doesn't change**: If the wallpaper doesn't change, double-check that the paths in your config file are correct, and that the folder structure matches what you have configured.
 
-* **Internet connection errors**: If you get errors about not being able to connect to the internet, check your internet connection. Fehther needs the connection to get the weather data.
+* **Internet connection errors**: If you get errors about not being able to connect to the internet, check your internet connection. fehther needs the connection to get the weather data.
 
 ## Contributing
 
-If you'd like to contribute to Fehther, please feel free to submit bug reports, feature requests, or pull requests. When submitting a pull request:
+If you'd like to contribute to fehther, please feel free to submit bug reports, feature requests, or pull requests. When submitting a pull request:
 
 1.  Fork the repository.
 2.  Create a new branch for your changes.
