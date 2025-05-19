@@ -36,29 +36,25 @@ ______________________________________________________________________
 
 4.  Download the Fehther repository and cd into the folder: 
 ```
-    git clone https://github.com/metamaxo/fehther && cd fether
+    git clone https://github.com/metamaxo/fehther && cd fehther
 ```
 5.  Copy the config.ini file into your .config folder: 
 ```
-    cp -r fehther_config ~/.config/
+    sudo cp -r ./fehter/config.ini ~/.config/fehther/
 ```
-6.  Build fehther: 
+6.  move fehther into .bin and make executable: 
 ```
-    cargo build --release 
+    sudo chmod +x ./fehter/fehther && cp ./fehter/fehther ~/.bin 
 ```
-7.  move fehther into .bin and make executable 
-```
-    chmod +x ./target/release/fehther && mv ./target/release/fether /home/<user>/.bin/fehther/
-```
-8.  execute fehther from wherever is convenient. For example:
+7.  execute fehther from wherever is convenient. For example:
 
   for running fehther from your i3 config add the following line to ~/.config/i3/ :
 ```
-    exec --no-startup-id nohup /.bin/fehther/fehther
+    exec --no-startup-id  ./.bin/fehther
 ```
   for running fehther from bash or zsh add the folling line to the corresponding .zshrc or .bashrc: 
 ```
-    nohup /.bin/fehther/fehther &
+    nohup ./.bin/fehther/fehther &
 ```
 9. (optional) remove unnecessary files: 
 ```
