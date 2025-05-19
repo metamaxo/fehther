@@ -137,6 +137,10 @@ Fehther supports several modes, which can be used individually or in combination
 
 Fehther offers many configuration options, most of which are optional. Here's a detailed explanation of each option. Ensure your folder layout matches the configured modes. The basic folder structure starts from your main wallpaper folder:
 
+\`wallpaper_folder/daytime_folder/weather_folder\`
+
+For example, if it's daytime and raining, Fehther will look in: \`wallpapers/day/rain\`
+
 For example, a complete folder structure for day and night might look like this:
 
 \`\`\`
@@ -159,6 +163,11 @@ For example, a complete folder structure for day and night might look like this:
         └── thunder/
 \`\`\`
 
+And a folder structure for sunrise/sunset:
+
+\`\`\`
+-home/user/wallpapers/sunset/
+\`\`\`
 
 ###   Settings
 
@@ -276,3 +285,6 @@ If you'd like to contribute to Fehther, please feel free to submit bug reports, 
 
 Please follow the existing code style and include relevant tests when possible.
 
+## License
+
+(Add License here)
