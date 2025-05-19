@@ -1,18 +1,18 @@
-use crate::Daytime;
 use crate::Mode;
+use crate::types::Daytime;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 // Use sunset and sunrise data to find the current day time. If sunset mode is on, function will
 // detect sunrise and sunset if current time is within configured sunset time limit.
-pub fn fetch_daytime(sunrise: i32, sunset: i32, modes: &Vec<Mode>, sunset_limit: i32) -> Daytime {
+pub fn fetch_daytime(sunrise: i32, sunset: i32, modes: &[Mode], sunset_limit: i32) -> Daytime {
     // get current time
     let current_time = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap()
         .as_secs() as i32;
     // find day time
-    match modes.contains(&Mode::SunriseMode) {
+    match modes.contains(&Mode::GoldenHourMode) {
         true => {
             let sunset_secs = sunset_limit * 60;
             if sunrise <= current_time && current_time < sunset {
@@ -48,11 +48,11 @@ mod tests {
         current_time: i64,
         sunrise: i64,
         sunset: i64,
-        modes: &Vec<Mode>,
+        modes: &[Mode],
         sunset_limit: i64,
     ) -> Daytime {
         // find day time
-        match modes.contains(&Mode::SunriseMode) {
+        match modes.contains(&Mode::GoldenHourMode) {
             true => {
                 let sunset_secs = sunset_limit * 60;
                 if sunrise <= current_time && current_time < sunset {
@@ -82,7 +82,7 @@ mod tests {
         let sunrise: i64 = 1747021974;
         let sunset: i64 = 1747077771;
         let sunset_time: i64 = 30; // 30 minutes for sunset/sunrise period
-        let modes: Vec<Mode> = vec![Mode::SunriseMode];
+        let modes: Vec<Mode> = vec![Mode::GoldenHourMode];
 
         // Test within sunrise period
         let current_time = sunrise + 15 * 60; // Sunrise + 15 minutes
@@ -129,7 +129,7 @@ mod tests {
         let sunset: i64 = 1747077771;
         let sunset_time: i64 = 30;
 
-        let modes: Vec<Mode> = vec![Mode::SunriseMode];
+        let modes: Vec<Mode> = vec![Mode::GoldenHourMode];
 
         // Test at the exact time of sunrise
         let current_time = sunrise;

@@ -1,19 +1,20 @@
-use crate::Daytime;
 use crate::Mode;
 use crate::PathBuf;
 use crate::Settings;
 use crate::WeatherType;
+use crate::types::Daytime;
 use anyhow::anyhow;
 use anyhow::{Context, Result};
 use ini::Ini;
 use std::collections::HashMap;
 
+// get interval and add 1 minute.
 fn get_interval(interval: &str) -> i32 {
     interval.parse::<i32>().unwrap() + 1
 }
 
 // Find path to home directory for reading config file
-fn fetch_config_path() -> Result<PathBuf> {
+pub fn fetch_config_path() -> Result<PathBuf> {
     Ok(home::home_dir()
         .ok_or_else(|| anyhow!("Could not determine user's home directory"))?
         .join(".config")
@@ -22,8 +23,7 @@ fn fetch_config_path() -> Result<PathBuf> {
 }
 
 // Read config file and load configuration
-pub fn fetch_config() -> Result<Settings> {
-    let config_path = fetch_config_path()?;
+pub fn fetch_config(config_path: PathBuf) -> Result<Settings> {
     let config = Ini::load_from_file(&config_path)
         .with_context(|| format!("Failed to load config file: {}", config_path.display()))?;
 
@@ -40,22 +40,6 @@ pub fn fetch_config() -> Result<Settings> {
         "broken-clouds",
     ];
 
-    fn get_weathertype(weathertype: &str) -> Result<WeatherType> {
-        match weathertype.to_lowercase().as_str() {
-            "clear" => Ok(WeatherType::Clear),
-            "few-clouds" => Ok(WeatherType::FewClouds),
-            "scattered-clouds" => Ok(WeatherType::ScatteredClouds),
-            "broken-clouds" => Ok(WeatherType::BrokenClouds),
-            "overcast-clouds" => Ok(WeatherType::OvercastClouds),
-            "drizzle" => Ok(WeatherType::Drizzle),
-            "mist" => Ok(WeatherType::Mist),
-            "rain" => Ok(WeatherType::Rain),
-            "snow" => Ok(WeatherType::Snow),
-            "thunder" => Ok(WeatherType::Thunder),
-            _ => Err(anyhow!("not a known weathertype: {}", weathertype)),
-        }
-    }
-
     let key = config
         .get_from(Some("settings"), "key")
         .unwrap_or_default()
@@ -68,10 +52,13 @@ pub fn fetch_config() -> Result<Settings> {
         .get_from(Some("settings"), "country")
         .unwrap_or_default()
         .to_string();
-    let path = config
+    // Should panic if no path is found
+    let path: Result<String, anyhow::Error> = config
         .get_from(Some("settings"), "path")
-        .unwrap_or_default()
-        .to_string();
+        .map(|s| s.to_string())
+        .ok_or_else(|| anyhow!("no path to wallpaper folder"));
+
+    let path = path?;
 
     let modes = config
         .section(Some("modes"))
@@ -106,7 +93,7 @@ pub fn fetch_config() -> Result<Settings> {
                 let weather_types: Vec<WeatherType> = weather_types_str
                     .split_whitespace()
                     .filter(|weather| default_weather_types.contains(weather))
-                    .filter_map(|weather| get_weathertype(weather).ok())
+                    .filter_map(|weather| WeatherType::get_weathertype(weather).ok())
                     .collect();
                 if !weather_types.is_empty() {
                     weather_groups.insert(folder_name.to_string(), weather_types);
@@ -117,7 +104,7 @@ pub fn fetch_config() -> Result<Settings> {
 
     let sunset_time = get_interval(
         config
-            .get_from(Some("modes"), "sunset-time")
+            .get_from(Some("modes"), "golden-hour-time")
             .unwrap_or("60"),
     );
     let interval = get_interval(
@@ -129,7 +116,7 @@ pub fn fetch_config() -> Result<Settings> {
     let mut disabled_daytimes: Vec<Daytime> = Vec::new();
 
     for daytime in config
-        .get_from(Some("modes"), "disabled-weather-modes")
+        .get_from(Some("modes"), "disabled-daytime-modes")
         .unwrap_or("")
         .to_lowercase()
         .split_whitespace()
@@ -150,6 +137,7 @@ pub fn fetch_config() -> Result<Settings> {
         country,
         path,
         modes,
+        recovery_mode: false,
         disabled_daytimes: Some(disabled_daytimes),
         folder_names: if custom_folder_names {
             if let Some(folder_name) = config.get_from(Some("folders"), "daytime-folder-name") {
@@ -200,4 +188,115 @@ pub fn fetch_config() -> Result<Settings> {
         ),
         timer: 0,
     })
+}
+
+#[test]
+// testing normal config
+fn fetch_config_test_1() -> Result<()> {
+    let config_path = PathBuf::from(r"./test_config/test_1.ini");
+    let settings: Settings = fetch_config(config_path)?;
+
+    let expected_disabled_daytimes = Some(vec![Daytime::Sunset, Daytime::Sunrise]);
+
+    let mut expected_weather_groups = HashMap::new();
+    expected_weather_groups.insert(
+        "rainy".to_string(),
+        vec![WeatherType::Drizzle, WeatherType::Rain],
+    );
+    expected_weather_groups.insert(
+        "very-cloudy".to_string(),
+        vec![WeatherType::BrokenClouds, WeatherType::OvercastClouds],
+    );
+    expected_weather_groups.insert(
+        "slightly-cloudy".to_string(),
+        vec![WeatherType::FewClouds, WeatherType::ScatteredClouds],
+    );
+    expected_weather_groups.insert("clear".to_string(), vec![WeatherType::Clear]);
+
+    let mut expected_folder_names = HashMap::new();
+    expected_folder_names.insert(Daytime::Sunrise, "moo".to_string());
+    expected_folder_names.insert(Daytime::Day, "foo".to_string());
+    expected_folder_names.insert(Daytime::Sunset, "woo".to_string());
+    expected_folder_names.insert(Daytime::Night, "boo".to_string());
+    assert_eq!(
+        settings.modes,
+        vec![
+            Mode::DaytimeMode,
+            Mode::GoldenHourMode,
+            Mode::WeatherMode,
+            Mode::CycleMode
+        ]
+    );
+    assert_eq!(settings.disabled_daytimes, expected_disabled_daytimes);
+    assert_eq!(settings.weather_groups, expected_weather_groups);
+    assert_eq!(settings.folder_names, expected_folder_names);
+    assert_eq!(settings.key, "fake-key".to_string());
+    assert_eq!(settings.city, "london".to_string());
+    assert_eq!(settings.country, "UK".to_string());
+    assert_eq!(settings.path, "/home/user/files/documents/wallpapers");
+
+    Ok(())
+}
+#[test]
+// testing config with missing parts
+fn fetch_config_test_2() -> Result<()> {
+    let config_path = PathBuf::from(r"./test_config/test_2.ini");
+    let settings: Settings = fetch_config(config_path)?;
+
+    let expected_disabled_daytimes = Some(vec![]);
+    let expected_modes = vec![Mode::CycleMode];
+
+    let expected_weather_groups = HashMap::new();
+    let mut expected_folder_names = HashMap::new();
+    expected_folder_names.insert(Daytime::Sunrise, "sunrise".to_string());
+    expected_folder_names.insert(Daytime::Day, "day".to_string());
+    expected_folder_names.insert(Daytime::Sunset, "sunset".to_string());
+    expected_folder_names.insert(Daytime::Night, "night".to_string());
+
+    assert_eq!(settings.feh_mode, "--bg-fill".to_string());
+    assert_eq!(settings.sunset_time, 61);
+    assert_eq!(settings.disabled_daytimes, expected_disabled_daytimes);
+    assert_eq!(settings.modes, expected_modes);
+    assert_eq!(settings.weather_groups, expected_weather_groups);
+    assert_eq!(settings.folder_names, expected_folder_names);
+
+    Ok(())
+}
+#[test]
+// testing config with custom folder names turned off, but custom folder names in condig
+fn fetch_config_test_3() -> Result<()> {
+    let config_path = PathBuf::from(r"./test_config/test_3.ini");
+    let settings: Settings = fetch_config(config_path)?;
+
+    let expected_disabled_daytimes = Some(vec![]);
+    let expected_modes = vec![];
+
+    let expected_weather_groups = HashMap::new();
+    let mut expected_folder_names = HashMap::new();
+    expected_folder_names.insert(Daytime::Sunrise, "sunrise".to_string());
+    expected_folder_names.insert(Daytime::Day, "day".to_string());
+    expected_folder_names.insert(Daytime::Sunset, "sunset".to_string());
+    expected_folder_names.insert(Daytime::Night, "night".to_string());
+
+    assert_eq!(settings.feh_mode, "--bg-fill".to_string());
+    assert_eq!(settings.sunset_time, 61);
+    assert_eq!(settings.disabled_daytimes, expected_disabled_daytimes);
+    assert_eq!(settings.modes, expected_modes);
+    assert_eq!(settings.weather_groups, expected_weather_groups);
+    assert_eq!(settings.folder_names, expected_folder_names);
+
+    Ok(())
+}
+
+#[test]
+// testing with empty config, should panic
+fn fetch_config_test_4() -> Result<()> {
+    let config_path = PathBuf::from(r"./test_config/test_4.ini");
+    let result = fetch_config(config_path);
+
+    // Assert that the result is an error using `is_err()`
+    if result.is_ok() {
+        panic!("fetch_config should have returned an error, but it returned Ok");
+    }
+    Ok(())
 }
