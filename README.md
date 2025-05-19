@@ -143,7 +143,7 @@ For example, if it's daytime and raining, Fehther will look in: \`wallpapers/day
 
 For example, a complete folder structure for day and night might look like this:
 
-\`\`\`
+```bash
 -home/user/wallpapers/
     ├── day/
     │   ├── clear/
@@ -161,7 +161,7 @@ For example, a complete folder structure for day and night might look like this:
         ├── very-cloudy/
         ├── snow/
         └── thunder/
-\`\`\`
+```
 
 And a folder structure for sunrise/sunset:
 
