@@ -55,15 +55,15 @@ Fehther supports several modes, which can be used individually or in combination
 
     * Make sure rustup is installed:
 
-        \`\`\`
+        ```
         rustup -V
-        \`\`\`
+        ```
 
     * Install rustup if not installed:
 
-        \`\`\`
+        ```
         curl https://sh.rustup.rs -sSf | sh
-        \`\`\`
+        ```
 
 3.  **Create an OpenWeatherMap Account:**
 
@@ -73,33 +73,33 @@ Fehther supports several modes, which can be used individually or in combination
 
     * Download the Fehther repository and navigate to the folder:
 
-        \`\`\`
+        ```
         git clone https://github.com/metamaxo/fehther && cd fehther
-        \`\`\`
+        ```
 
 5.  **Copy the Configuration File:**
 
     * Copy the `config.ini` file into your configuration folder:
 
-        \`\`\`
+        ```
         sudo cp -r ./config.ini ~/.config/fehther/
-        \`\`\`
+        ```
 
 6.  **Install the Executable:**
 
     * Move the fehther executable to a standard location and make it executable:
 
-        \`\`\`
+        ```
         sudo chmod +x ./fehther/fehther && sudo cp ./fehther/fehther /usr/bin
-        \`\`\`
+        ```
 
         *(Preferred: System-wide installation)*
 
         OR
 
-        \`\`\`
+        ```
         sudo chmod +x ./fehther/fehther && mkdir -p ~/.local/bin && sudo cp ./fehther/fehther ~/.local/bin
-        \`\`\`
+        ```
 
         *(Alternative: User-specific installation)*
 
@@ -109,15 +109,15 @@ Fehther supports several modes, which can be used individually or in combination
 
     * For running Fehther from your i3 configuration, add the following line to `~/.config/i3/config`:
 
-        \`\`\`
+        ```
         exec --no-startup-id fehther
-        \`\`\`
+        ```
 
     * For running Fehther from Bash or Zsh, add the following line to the corresponding `.zshrc` or `.bashrc`:
 
-        \`\`\`
+        ```
         nohup fehther &
-        \`\`\`
+        ```
 
         * Add a note about the importance of sourcing the shell configuration file. This is crucial for the \`PATH\` changes to take effect.
 
@@ -125,9 +125,9 @@ Fehther supports several modes, which can be used individually or in combination
 
     * Remove the cloned repository:
 
-        \`\`\`
+        ```
         sudo rm -rf ~/fehther
-        \`\`\`
+        ```
 
 9.  **Configuration:**
 
@@ -136,10 +136,6 @@ Fehther supports several modes, which can be used individually or in combination
 ## Configuration
 
 Fehther offers many configuration options, most of which are optional. Here's a detailed explanation of each option. Ensure your folder layout matches the configured modes. The basic folder structure starts from your main wallpaper folder:
-
-\`wallpaper_folder/daytime_folder/weather_folder\`
-
-For example, if it's daytime and raining, Fehther will look in: \`wallpapers/day/rain\`
 
 For example, a complete folder structure for day and night might look like this:
 
@@ -163,67 +159,62 @@ For example, a complete folder structure for day and night might look like this:
         └── thunder/
 ```
 
-And a folder structure for sunrise/sunset:
-
-\`\`\`
--home/user/wallpapers/sunset/
-\`\`\`
 
 ###   Settings
 
-* \`key\`:  **(Required)** Replace this with your OpenWeatherMap API key. A free key can be obtained from <https://openweathermap.org>.
+* `key`:  **(Required)** Replace this with your OpenWeatherMap API key. A free key can be obtained from <https://openweathermap.org>.
 
-* \`city\`:  **(Required)** Replace this with your current city for accurate weather data.
+* `city`:  **(Required)** Replace this with your current city for accurate weather data.
 
-* \`country\`:  **(Required)** Use the two-letter country code for your location (e.g., "US", "CA", "GB").
+* `country`:  **(Required)** Use the two-letter country code for your location (e.g., "US", "CA", "GB").
 
-* \`path\`:  **(Required)** Replace this with the absolute path to your main wallpaper folder. This is the root directory where Fehther will look for subfolders.
+* `path`:  **(Required)** Replace this with the absolute path to your main wallpaper folder. This is the root directory where Fehther will look for subfolders.
 
 ###   Modes
 
 All modes can be combined. For example, you can use both weather mode and cycle mode simultaneously. Fehther will then cycle through wallpapers within the appropriate weather folder.
 
-* \`feh-mode\`: Sets the Feh display mode. Available modes are:
+* `feh-mode`: Sets the Feh display mode. Available modes are:
 
-    * \`center\`: Centers the image on the screen.
-    * \`fill\`: Fills the entire screen, preserving aspect ratio.
-    * \`max\`: Scales the image to the largest size that fits within the screen dimensions, preserving aspect ratio.
-    * \`scale\`: Scales the image to fit the screen.
-    * \`tile\`: Tiles the image to fill the screen.
+    * `center`: Centers the image on the screen.
+    * `fill`: Fills the entire screen, preserving aspect ratio.
+    * `max`: Scales the image to the largest size that fits within the screen dimensions, preserving aspect ratio.
+    * `scale`: Scales the image to fit the screen.
+    * `tile`: Tiles the image to fill the screen.
 
-* \`daytime-mode\`: If set to \`true\`, your wallpaper will change based on day and night.
+* `daytime-mode`: If set to `true`, your wallpaper will change based on day and night.
 
-* \`golden-hour-mode\`: If set to \`true\`, the wallpaper will change at sunrise and sunset.
+* `golden-hour-mode`: If set to `true`, the wallpaper will change at sunrise and sunset.
 
-* \`golden-hour-time\`: The duration (in minutes) after sunrise and before sunset that defines the "golden hour." Default is 60 minutes.
+* `golden-hour-time`: The duration (in minutes) after sunrise and before sunset that defines the "golden hour." Default is 60 minutes.
 
-* \`weather-mode\`: If set to \`true\`, the wallpaper will change based on the current weather conditions.
+* `weather-mode`: If set to `true`, the wallpaper will change based on the current weather conditions.
 
-* \`disabled-daytime-modes\`: A comma-separated list of daytimes for which weather mode should be disabled. For example, if you only want weather-based wallpapers during the day, set this to \`sunrise,sunset,night\`. Valid options are: \`sunrise\`, \`day\`, \`sunset\`, and \`night\`.
+* `disabled-daytime-modes`: A comma-separated list of daytimes for which weather mode should be disabled. For example, if you only want weather-based wallpapers during the day, set this to `sunrise sunset night`. Valid options are: `sunrise`, `day`, `sunset`, and `night`.
 
-* \`cycle-mode\`: If set to \`true\`, Fehther will cycle through the wallpapers in the current folder.
+* `cycle-mode`: If set to `true`, Fehther will cycle through the wallpapers in the current folder.
 
-* \`cycle-timer\`: Sets the interval (in minutes) for cycling through wallpapers in cycle mode. For example, setting this to \`5\` will change the wallpaper every 5 minutes.
+* `cycle-timer`: Sets the interval (in minutes) for cycling through wallpapers in cycle mode. For example, setting this to `5` will change the wallpaper every 5 minutes.
 
 ###   Weather Groups
 
-* \`weather-groups\`: Set to \`true\` to enable custom grouping of weather conditions.
+* `weather-groups`: Set to `true` to enable custom grouping of weather conditions.
 
-    Fehther allows you to group weather types for more flexible wallpaper selection. You can define custom groups, and each weather type can belong to only one group. Groups are defined in the format \`group-name = weather types\`. For example:
+    Fehther allows you to group weather types for more flexible wallpaper selection. You can define custom groups, and each weather type can belong to only one group. Groups are defined in the format `group-name = weather types`. For example:
 
-    \`\`\`
+    ```
     rainy = drizzle rain
     cloudy = broken-clouds overcast-clouds scattered-clouds
     clear = clear
-    \`\`\`
+    ```
 
     In this example, if the weather is "drizzle" or "rain", Fehther will use wallpapers from the \`rainy\` folder.
 
     **Folder Structure Example:**
 
-    Given the \`weather-groups\` example above, and assuming \`wallpaper_folder\` is set to \`/home/user/wallpapers\`, your wallpaper folder structure might look like this:
+    Given the `weather-groups` example above, and assuming `wallpaper_folder` is set to `/home/user/wallpapers`, your wallpaper folder structure might look like this:
 
-    \`\`\`
+    ```
     /home/user/wallpapers/
     ├── day/
     │   ├── clear/
@@ -235,27 +226,27 @@ All modes can be combined. For example, you can use both weather mode and cycle 
         ├── cloudy/
         ├── rainy/
         └── ...
-    \`\`\`
+    ```
 
     You can also rename single weather conditions to match your folder names:
 
-    \`\`\`
+    ```
     mist = foggy
-    \`\`\`
+    ```
 
 ###   Folders
 
-Each folder must be located within the main wallpaper folder specified by the \`path\` setting.
+Each folder must be located within the main wallpaper folder specified by the `path` setting.
 
-* \`custom-folder-names\`: Set to \`true\` to use custom folder names for daytimes. If \`false\`, the default names (\`day\`, \`night\`, \`sunrise\`, \`sunset\`) will be used.
+* `custom-folder-names`: Set to `true` to use custom folder names for daytimes. If `false`, the default names (`day`, `night`, `sunrise`, `sunset`) will be used.
 
-* \`daytime-folder-name\`: Custom folder name for daytime. Default is \`day\`.
+* `daytime-folder-name`: Custom folder name for daytime. Default is `day`.
 
-* \`nighttime-folder-name\`: Custom folder name for nighttime. Default is \`night\`.
+* `nighttime-folder-name`: Custom folder name for nighttime. Default is `night`.
 
-* \`sunrise-folder-name\`: Custom folder name for sunrise. Default is \`sunrise\`.
+* `sunrise-folder-name`: Custom folder name for sunrise. Default is `sunrise`.
 
-* \`sunset-folder-name\`: Custom folder name for sunset. Default is \`sunset\`.
+* `sunset-folder-name`: Custom folder name for sunset. Default is `sunset`.
 
 ## Extra Information
 
@@ -263,11 +254,11 @@ If you're having trouble finding high-resolution wallpapers to match your needs,
 
 ## Troubleshooting
 
-* **Permissions Issues:** If you encounter errors related to file permissions, ensure that you have the necessary permissions to read the wallpaper files and write to the configuration directory (\`~/.config/fehther\`). Using \`sudo\` for the copy and move commands, as shown in the installation instructions, should resolve most permission problems.
+* **Permissions Issues:** If you encounter errors related to file permissions, ensure that you have the necessary permissions to read the wallpaper files and write to the configuration directory (`~/.config/fehther`). Using `sudo` for the copy and move commands, as shown in the installation instructions, should resolve most permission problems.
 
-* **Feh Not Found:** If you get an error that \`feh\` cannot be found, double-check that it is correctly installed and that it's in your system's \`PATH\`. You can verify this by running \`which feh\` in your terminal. If it doesn't output a path, you'll need to install \`feh\` or add its installation directory to your \`PATH\`.
+* **Feh Not Found:** If you get an error that `feh` cannot be found, double-check that it is correctly installed and that it's in your system's `PATH`. You can verify this by running `which feh` in your terminal. If it doesn't output a path, you'll need to install `feh` or add its installation directory to your `PATH`.
 
-* **Config file not found**: If Fehther complains about the config file not being found, make sure that the file is located at \`~/.config/fehther/config.ini\`.
+* **Config file not found**: If Fehther complains about the config file not being found, make sure that the file is located at `~/.config/fehther/config.ini`.
 
 * **Wallpaper doesn't change**: If the wallpaper doesn't change, double-check that the paths in your config file are correct, and that the folder structure matches what you have configured.
 
@@ -285,6 +276,3 @@ If you'd like to contribute to Fehther, please feel free to submit bug reports, 
 
 Please follow the existing code style and include relevant tests when possible.
 
-## License
-
-(Add License here)
