@@ -1,4 +1,5 @@
-![Image](https://github.com/user-attachments/assets/6f94c942-e916-4cee-a4d8-0b593c965395)
+![Image](https://github.com/user-attachments/assets/6f3986ea-e2fa-4a30-93ca-6a3704c1d270)
+
 # Fehther
 
 A highly configurable wallpaper manager script built around Feh, using the OpenWeatherMap API to change your wallpaper based on weather conditions, sunrise, and sunset. When the weather changes, so does your wallpaper.
