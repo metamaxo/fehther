@@ -2,7 +2,7 @@
 
 # fehther
 
-A highly configurable wallpaper manager script built around Feh, using the OpenWeatherMap API to change your wallpaper based on weather conditions, sunrise, and sunset. When the weather changes, so does your wallpaper.
+A highly configurable wallpaper manager written in Rust, using Feh and the OpenWeatherMap API to change your wallpaper based on weather conditions, sunrise, and sunset. When the weather changes, so does your wallpaper. 
 
 ## Table of Contents
 
