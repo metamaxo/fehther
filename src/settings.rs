@@ -3,15 +3,13 @@ use crate::PathBuf;
 use crate::WeatherResponse;
 use crate::WeatherType;
 use crate::fs;
-use crate::types::Daytime;
-use crate::types::Mode;
+use crate::types::daytime::Daytime;
+use crate::types::default_types::IMAGE_EXTENSIONS;
+use crate::types::modes::Mode;
 use crate::utils;
 use std::collections::HashMap;
 
-// Image types for finding image files
-const IMAGE_EXTENSIONS: &[&str] = &["jpg", "jpeg", "png", "gif", "bmp", "webp", "tiff", "tif"];
-
-// Full configuration
+// All possible settings, parsed from config.ini.
 #[derive(Debug)]
 pub struct Settings {
     pub current_loop: bool,
@@ -21,11 +19,12 @@ pub struct Settings {
     pub path: String,
     pub modes: Vec<Mode>,
     pub daytime: Daytime,
+    pub golden_hour: bool,
     pub disabled_daytimes: Option<Vec<Daytime>>,
     pub folder_names: HashMap<Daytime, String>,
     pub custom_weather_groups: bool,
     pub weather_groups: HashMap<String, Vec<WeatherType>>,
-    pub sunset_time: i32,
+    pub sunset_timer: i32,
     pub interval: i32,
     pub weather: WeatherType,
     pub feh_mode: String,
@@ -35,53 +34,42 @@ pub struct Settings {
 
 // Full configuration is stored in the Settings struct and called through traits.
 impl Settings {
+    // check if the current daytime is explicitly disabled for weather mode
+    fn is_current_daytime_disabled_for_weather_mode(&self) -> bool {
+        self.disabled_daytimes
+            .as_ref()
+            .is_some_and(|daytimes| daytimes.contains(&self.daytime))
+    }
+
     // Fetch path to wallpaper directory.
     pub fn fetch_path(&self) -> String {
-        // Check if currently in recovery mode(no internet connection)
-        match self.recovery_mode {
-            // If recovery mode = true, path is only root path.
-            true => self.path.to_string(),
-            // Check if weather mode is turned on
-            false => match self.modes.contains(&Mode::WeatherMode) {
-                // If weather mode is turned on, check if daytme mode is turned on.
-                true => match self.modes.contains(&Mode::DaytimeMode) {
-                    // If daytime mode is turned on, check if any daytimes are disabled.
-                    true => match &self.disabled_daytimes {
-                        // If daytimes are disabled, check if current daytime is disabled for
-                        // weather mode.
-                        Some(daytimes) => match daytimes.contains(&self.daytime) {
-                            // If current daytime is disabled for weather mode, return path +
-                            // daytime.
-                            true => format!("{}{}", self.path, self.fetch_folder_name(),),
-                            // if current daytime isn't disabled for weather mode, return path +
-                            // daytime + weather group name.
-                            false => format!(
-                                "{}{}/{}",
-                                self.path,
-                                self.fetch_folder_name(),
-                                self.check_group()
-                            ),
-                        },
-                        // If there are no disabled daytimes for weather mode, return path + daytime
-                        // + weather group name.
-                        None => format!(
-                            "{}{}/{}",
-                            self.path,
-                            self.fetch_folder_name(),
-                            self.check_group(),
-                        ),
-                    },
-                    // If daytime mode is disabled, return only path and weather group.
-                    false => format!("{}{}", self.path, self.check_group()),
-                },
-                // Weather mode turned off, check if daytime mode turned on. Return only path if
-                // daytime mode is turned off, else return path + daytime folder name.
-                false => match self.modes.contains(&Mode::DaytimeMode) {
-                    true => format!("{}{}", self.path, self.fetch_folder_name()),
-                    false => self.path.to_string(),
-                },
-            },
+        // If in recovery mode, return only the base path
+        if self.recovery_mode {
+            return self.path.clone();
         }
+
+        let is_weather_mode_on = self.modes.contains(&Mode::Weather);
+        let is_daytime_mode_on = self.modes.contains(&Mode::Daytime);
+        let is_daytime_disabled_for_weather = self.is_current_daytime_disabled_for_weather_mode();
+
+        let mut final_path = self.path.clone();
+
+        // Append daytime folder if daytime mode is on
+        if is_daytime_mode_on {
+            final_path.push_str(&self.fetch_folder_name());
+        }
+
+        // Append weather group if weather mode is on AND
+        // (daytime mode is off OR current daytime is NOT disabled for weather)
+        if is_weather_mode_on && !(is_daytime_mode_on && is_daytime_disabled_for_weather) {
+            // Add a separator if a previous segment (daytime folder) was added
+            if is_daytime_mode_on {
+                final_path.push('/');
+            }
+            final_path.push_str(&self.check_group());
+        }
+
+        final_path
     }
 
     // Fetch correct folder name.
@@ -125,8 +113,8 @@ impl Settings {
         let daytime = utils::fetch_daytime(
             response.sys.sunrise,
             response.sys.sunset,
-            &self.modes,
-            self.sunset_time,
+            self.golden_hour,
+            self.sunset_timer,
         );
         if self.daytime != daytime {
             self.daytime = daytime;
@@ -137,7 +125,6 @@ impl Settings {
     // Set wallpaper
     pub fn set_wallpaper(&self) -> Result<(), anyhow::Error> {
         let directory_path = PathBuf::from(self.fetch_path());
-
         if let Ok(entries) = fs::read_dir(&directory_path) {
             let image_files: Vec<String> = entries
                 .filter_map(|entry| entry.ok().map(|e| e.path()))
